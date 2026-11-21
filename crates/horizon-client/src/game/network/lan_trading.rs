@@ -497,7 +497,9 @@ impl Game<'_> {
         true
     }
     /// `Merchant.stillValid` for a trader: it is alive and the guest is within
-    /// the entity interaction range plus 4 of its box.
+    /// the entity interaction range plus 4 of its box. A villager's profession
+    /// must resolve in the world's table: vanilla's, none, or one a mod
+    /// registered (an unknown saved id closes the screen).
     pub(super) fn lan_merchant_valid(
         &self,
         g: &horizon_client::lan::guest::Guest,
@@ -506,7 +508,11 @@ impl Game<'_> {
         self.mobs.iter().find(|m| m.id == id).is_some_and(|m| {
             m.alive()
                 && (m.species() != horizon_client::mobs::Species::Villager
-                    || m.extra.profession.index().is_some())
+                    || self
+                        .stations()
+                        .professions
+                        .state_index(&m.extra.profession)
+                        .is_some())
                 && guest_within_entity_range(g, &m.bounds(), 4.0)
         })
     }
