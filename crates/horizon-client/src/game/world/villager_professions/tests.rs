@@ -791,8 +791,10 @@ fn villager_registered_profession_keeps_a_guest_trade_screen_valid() {
                 10,
             );
             // `AbstractVillager.stillValid`: alive and in reach; a registered
-            // profession resolves in the world's table, so the screen stays open.
+            // profession resolves in the world's table, so the screen stays open
+            // and the guest's trades are applied (not opaque).
             assert!(game.lan_merchant_valid(&guest, id));
+            assert!(!game.lan_merchant_opaque(id));
             // An id no mod registers doesn't resolve: the screen closes.
             let index = game.mobs.iter().position(|mob| mob.id == id).unwrap();
             game.mobs[index].extra.profession =
@@ -800,6 +802,7 @@ fn villager_registered_profession_keeps_a_guest_trade_screen_valid() {
                     "example:engineer".into(),
                 );
             assert!(!game.lan_merchant_valid(&guest, id));
+            assert!(game.lan_merchant_opaque(id));
         },
     );
 }
